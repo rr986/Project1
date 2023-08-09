@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Query Tool</title>
+    <style>
+        /* Styles for the loading screen */
+        #loadingScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            text-align: center;
+            padding-top: 20%;
+        }
+    </style>
 </head>
 <body>
     <h2>Enter Email or Phone Number:</h2>
@@ -13,10 +28,18 @@
     <h3>API Response:</h3>
     <pre id="response"></pre>
 
+    <!-- Loading screen div -->
+    <div id="loadingScreen">
+        <h2>Loading...</h2>
+    </div>
+
     <script>
         function fetchData() {
             const inputValue = document.getElementById('inputValue').value;
             const url = `https://osint.industries/api/email/${inputValue}`;
+
+            // Show the loading screen
+            document.getElementById('loadingScreen').style.display = 'block';
 
             fetch(url, {
                 method: 'GET',
@@ -28,12 +51,17 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                // Hide the loading screen
+                document.getElementById('loadingScreen').style.display = 'none';
             })
             .catch(error => {
                 document.getElementById('response').textContent = 'Error fetching data: ' + error;
+                // Hide the loading screen
+                document.getElementById('loadingScreen').style.display = 'none';
             });
         }
     </script>
 </body>
 </html>
+
 
