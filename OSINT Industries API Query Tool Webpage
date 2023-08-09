@@ -18,14 +18,20 @@
             const inputValue = document.getElementById('inputValue').value;
             const url = `https://osint.industries/api/email/${inputValue}`;
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('response').textContent = 'Error fetching data: ' + error;
-                });
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74' // Your API key
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('response').textContent = 'Error fetching data: ' + error;
+            });
         }
     </script>
 </body>
