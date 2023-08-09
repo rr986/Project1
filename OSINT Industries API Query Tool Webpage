@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Query Tool</title>
+</head>
+<body>
+    <h2>Enter Email or Phone Number:</h2>
+    <input type="text" id="inputValue" placeholder="Enter email or phone number">
+    <button onclick="fetchData()">Submit</button>
+
+    <h3>API Response:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        function fetchData() {
+            const inputValue = document.getElementById('inputValue').value;
+            const url = `https://osint.industries/api/email/${inputValue}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('response').textContent = 'Error fetching data: ' + error;
+                });
+        }
+    </script>
+</body>
+</html>
