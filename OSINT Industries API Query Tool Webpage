@@ -11,7 +11,7 @@
     <button onclick="fetchData()">Submit</button>
 
     <h3>API Response:</h3>
-    <pre id="response"></pre>
+    <div id="dataContainer"></div>
 
     <script>
         function fetchData() {
@@ -27,10 +27,32 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                renderData(data);
             })
             .catch(error => {
-                document.getElementById('response').textContent = 'Error fetching data: ' + error;
+                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
+            });
+        }
+
+        function renderData(jsonData) {
+            const container = document.getElementById('dataContainer');
+
+            jsonData.data.forEach(item => {
+                // Create a div for each module
+                const moduleDiv = document.createElement('div');
+
+                // Add website name
+                const websiteName = document.createElement('h2');
+                websiteName.textContent = item.module;
+                moduleDiv.appendChild(websiteName);
+
+                // Example: Add username (adjust based on actual data properties)
+                const username = document.createElement('p');
+                username.textContent = "Username: " + item.data.username;
+                moduleDiv.appendChild(username);
+
+                // Append the module div to the container
+                container.appendChild(moduleDiv);
             });
         }
     </script>
