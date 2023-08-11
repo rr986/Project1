@@ -76,7 +76,6 @@
                 document.getElementById('loadingGif').style.display = 'none';
                 renderData(data);
             });
-           
         }
 
         function renderData(jsonData) {
