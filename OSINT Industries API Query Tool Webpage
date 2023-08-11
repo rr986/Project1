@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Query Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .side-widget {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .widget img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body>
     <h2>Enter Email:</h2>
@@ -15,61 +27,73 @@
     <button onclick="fetchData()">Submit</button>
 
     <h3>API Response:</h3>
-    <div id="dataContainer"></div>
+    <table border="1" id="dataTable">
+        <thead>
+            <tr>
+                <th>Website</th>
+                <th>Profile Link</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
     <script>
         function fetchData() {
-            const emailValue = document.getElementById('inputEmail').value;
-            const phoneValue = document.getElementById('inputPhone').value;
-
-            let url;
-            if (emailValue) {
-                url = `https://osint.industries/api/email/${emailValue}`;
-            } else if (phoneValue) {
-                url = `https://osint.industries/api/phone/${phoneValue}`;
-            } else {
-                document.getElementById('dataContainer').textContent = "Please enter either an email or phone number.";
-                return;
-            }
-
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'accept': 'application/json',
-                    'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74' // Your API key
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                renderData(data);
-            })
-            .catch(error => {
-                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
-            });
+            // ... [rest of the fetchData function]
         }
 
         function renderData(jsonData) {
-            const container = document.getElementById('dataContainer');
+            const tableBody = document.getElementById('dataTable').querySelector('tbody');
 
             jsonData.data.forEach(item => {
-                // Create a div for each module
-                const moduleDiv = document.createElement('div');
+                // Create a new table row
+                const row = document.createElement('tr');
 
-                // Add website name
-                const websiteName = document.createElement('h2');
-                websiteName.textContent = item.module;
-                moduleDiv.appendChild(websiteName);
+                // Website name column
+                const websiteNameCell = document.createElement('td');
+                websiteNameCell.textContent = item.module;
+                row.appendChild(websiteNameCell);
 
-                // Example: Add username (adjust based on actual data properties)
-                const username = document.createElement('p');
-                username.textContent = "Username: " + item.data.username;
-                moduleDiv.appendChild(username);
+                // Profile link column
+                const profileLinkCell = document.createElement('td');
+                const profileLink = document.createElement('a');
+                profileLink.href = item.data.member_url || '#'; // Adjust based on actual data properties
+                profileLink.textContent = 'Profile Link';
+                profileLinkCell.appendChild(profileLink);
+                row.appendChild(profileLinkCell);
 
-                // Append the module div to the container
-                container.appendChild(moduleDiv);
+                // Data column (example: username)
+                const dataCell = document.createElement('td');
+                dataCell.textContent = "Username: " + item.data.username; // Adjust based on actual data properties
+                row.appendChild(dataCell);
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+
+                // Create the widget for profile picture
+                const widgetDiv = document.createElement('div');
+                widgetDiv.className = 'side-widget to-right invert-color mix-blend-difference show';
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item align-v-bottom';
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'link hover-up';
+                const widgetSpan = document.createElement('span');
+                widgetSpan.className = 'widget float-icon';
+                const img = document.createElement('img');
+                img.src = item.data.avatar_url || ''; // Adjust based on actual data properties
+                widgetSpan.appendChild(img);
+                link.appendChild(widgetSpan);
+                itemDiv.appendChild(link);
+                widgetDiv.appendChild(itemDiv);
+                document.body.appendChild(widgetDiv);
             });
         }
     </script>
+</body>
+</html>
+
 </body>
 </html>
 
