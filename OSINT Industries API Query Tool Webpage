@@ -6,8 +6,12 @@
     <title>API Query Tool</title>
 </head>
 <body>
-    <h2>Enter Email or Phone Number:</h2>
-    <input type="text" id="inputValue" placeholder="Enter email or phone number">
+    <h2>Enter Email:</h2>
+    <input type="text" id="inputEmail" placeholder="Enter email">
+    
+    <h2>Enter Phone Number:</h2>
+    <input type="text" id="inputPhone" placeholder="Enter phone number">
+    
     <button onclick="fetchData()">Submit</button>
 
     <h3>API Response:</h3>
@@ -15,8 +19,18 @@
 
     <script>
         function fetchData() {
-            const inputValue = document.getElementById('inputValue').value;
-            const url = `https://osint.industries/api/email/${inputValue}`;
+            const emailValue = document.getElementById('inputEmail').value;
+            const phoneValue = document.getElementById('inputPhone').value;
+
+            let url;
+            if (emailValue) {
+                url = `https://osint.industries/api/email/${emailValue}`;
+            } else if (phoneValue) {
+                url = `https://osint.industries/api/phone/${phoneValue}`;
+            } else {
+                document.getElementById('dataContainer').textContent = "Please enter either an email or phone number.";
+                return;
+            }
 
             fetch(url, {
                 method: 'GET',
