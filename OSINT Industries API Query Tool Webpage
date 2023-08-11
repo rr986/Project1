@@ -43,19 +43,7 @@
             // Display the loading GIF
             document.getElementById('loadingGif').style.display = 'block';
 
-            // ... [rest of the fetchData function]
-
-            .then(data => {
-                // Hide the loading GIF
-                document.getElementById('loadingGif').style.display = 'none';
-                renderData(data);
-            })
-            .catch(error => {
-                // Hide the loading GIF
-                document.getElementById('loadingGif').style.display = 'none';
-                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
-            });
-           const emailValue = document.getElementById('inputEmail').value;
+            const emailValue = document.getElementById('inputEmail').value;
             const phoneValue = document.getElementById('inputPhone').value;
 
             let url;
@@ -82,6 +70,13 @@
             .catch(error => {
                 document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
             });
+
+            .then(data => {
+                // Hide the loading GIF
+                document.getElementById('loadingGif').style.display = 'none';
+                renderData(data);
+            });
+           
         }
 
         function renderData(jsonData) {
