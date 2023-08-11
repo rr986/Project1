@@ -26,9 +26,6 @@
     
     <button onclick="fetchData()">Submit</button>
 
-    <!-- Loading GIF (replace the src with your actual GIF link) -->
-    <img id="loadingGif" src="path_to_your_loading_gif.gif" style="display: none;" alt="Loading...">
-
     <h3>API Response:</h3>
     <table border="1" id="dataTable">
         <thead>
@@ -46,21 +43,89 @@
             // Display the loading GIF
             document.getElementById('loadingGif').style.display = 'block';
 
-            // ... [rest of the fetchData function]
+            const emailValue = document.getElementById('inputEmail').value;
+            const phoneValue = document.getElementById('inputPhone').value;
+
+            let url;
+            if (emailValue) {
+                url = `https://osint.industries/api/email/${emailValue}`;
+            } else if (phoneValue) {
+                url = `https://osint.industries/api/phone/${phoneValue}`;
+            } else {
+                document.getElementById('dataContainer').textContent = "Please enter either an email or phone number.";
+                return;
+            }
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74' // Your API key
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderData(data);
+            })
+            .catch(error => {
+                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
+            });
 
             .then(data => {
                 // Hide the loading GIF
                 document.getElementById('loadingGif').style.display = 'none';
                 renderData(data);
-            })
-            .catch(error => {
-                // Hide the loading GIF
-                document.getElementById('loadingGif').style.display = 'none';
-                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
             });
+           
         }
 
-        // ... [rest of the script]
+        function renderData(jsonData) {
+            const tableBody = document.getElementById('dataTable').querySelector('tbody');
+
+            jsonData.data.forEach(item => {
+                // Create a new table row
+                const row = document.createElement('tr');
+
+                // Website name column
+                const websiteNameCell = document.createElement('td');
+                websiteNameCell.textContent = item.module;
+                row.appendChild(websiteNameCell);
+
+                // Profile link column
+                const profileLinkCell = document.createElement('td');
+                const profileLink = document.createElement('a');
+                profileLink.href = item.data.member_url || '#'; // Adjust based on actual data properties
+                profileLink.textContent = 'Profile Link';
+                profileLinkCell.appendChild(profileLink);
+                row.appendChild(profileLinkCell);
+
+                // Data column (example: username)
+                const dataCell = document.createElement('td');
+                dataCell.textContent = "Username: " + item.data.username; // Adjust based on actual data properties
+                row.appendChild(dataCell);
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+
+                // Create the widget for profile picture
+                const widgetDiv = document.createElement('div');
+                widgetDiv.className = 'side-widget to-right invert-color mix-blend-difference show';
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item align-v-bottom';
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'link hover-up';
+                const widgetSpan = document.createElement('span');
+                widgetSpan.className = 'widget float-icon';
+                const img = document.createElement('img');
+                img.src = item.data.avatar_url || ''; // Adjust based on actual data properties
+                widgetSpan.appendChild(img);
+                link.appendChild(widgetSpan);
+                itemDiv.appendChild(link);
+                widgetDiv.appendChild(itemDiv);
+                document.body.appendChild(widgetDiv);
+            });
+        }
     </script>
 </body>
 </html>
