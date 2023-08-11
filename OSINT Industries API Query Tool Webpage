@@ -40,7 +40,33 @@
 
     <script>
         function fetchData() {
-            // ... [rest of the fetchData function]
+           const emailValue = document.getElementById('inputEmail').value;
+            const phoneValue = document.getElementById('inputPhone').value;
+
+            let url;
+            if (emailValue) {
+                url = `https://osint.industries/api/email/${emailValue}`;
+            } else if (phoneValue) {
+                url = `https://osint.industries/api/phone/${phoneValue}`;
+            } else {
+                document.getElementById('dataContainer').textContent = "Please enter either an email or phone number.";
+                return;
+            }
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74' // Your API key
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderData(data);
+            })
+            .catch(error => {
+                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
+            });
         }
 
         function renderData(jsonData) {
