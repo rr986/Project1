@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,114 +10,135 @@
         .side-widget {
             display: inline-block;
             margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         .widget img {
             width: 50px;
             height: 50px;
             border-radius: 50%;
+            margin-right: 10px;
+        }
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <h2>Enter Email:</h2>
-    <input type="text" id="inputEmail" placeholder="Enter email">
+<div id="loadingScreen">
+    <img src="assets/load.gif" alt="Loading...">
+</div>
+
+<h2>Enter Email:</h2>
+<input type="text" id="inputEmail" placeholder="Enter email">
     
-    <h2>Enter Phone Number:</h2>
-    <input type="text" id="inputPhone" placeholder="Enter phone number">
+<h2>Enter Phone Number:</h2>
+<input type="text" id="inputPhone" placeholder="Enter phone number">
     
-    <button onclick="fetchData()">Submit</button>
+<button onclick="fetchData()">Submit</button>
 
-    <h3>API Response:</h3>
-    <table border="1" id="dataTable">
-        <thead>
-            <tr>
-                <th>Website</th>
-                <th>Profile Link</th>
-                <th>Data</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h3>API Response:</h3>
+<table border="1" id="dataTable">
+    <thead>
+        <tr>
+            <th>Website</th>
+            <th>Profile Link</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-    <script>
-        function fetchData() {
-            const emailValue = document.getElementById('inputEmail').value;
-            const phoneValue = document.getElementById('inputPhone').value;
+<script>
+    function fetchData() {
+        document.getElementById('loadingScreen').style.display = 'flex';
 
-            let url;
-            if (emailValue) {
-                url = `https://osint.industries/api/email/${emailValue}`;
-            } else if (phoneValue) {
-                url = `https://osint.industries/api/phone/${phoneValue}`;
-            } else {
-                document.getElementById('dataContainer').textContent = "Please enter either an email or phone number.";
-                return;
-            }
+        const emailValue = document.getElementById('inputEmail').value;
+        const phoneValue = document.getElementById('inputPhone').value;
 
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'accept': 'application/json',
-                    'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74' // Your API key
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                renderData(data);
-            })
-            .catch(error => {
-                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
-            });
+        let url;
+        if (emailValue) {
+            url = `https://osint.industries/api/email/${emailValue}`;
+        } else if (phoneValue) {
+            url = `https://osint.industries/api/phone/${phoneValue}`;
+        } else {
+            alert("Please enter either an email or phone number.");
+            return;
         }
 
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+                'api-key': 'fec7b4c608be80fe61c9c9be1d08fe74'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loadingScreen').style.display = 'none';
+            renderData(data);
+        })
+    .catch(error => {
+                document.getElementById('dataContainer').textContent = 'Error fetching data: ' + error;
+            });
+    }
+
     function renderData(jsonData) {
-            const tableBody = document.getElementById('dataTable').querySelector('tbody');
+    const tableBody = document.getElementById('dataTable').querySelector('tbody'); // Define tableBody here
 
-            jsonData.data.forEach(item => {
-                // Create a new table row
-                const row = document.createElement('tr');
+    jsonData.data.forEach(item => {
+        const row = document.createElement('tr');
 
-                // Website name column
-                const websiteNameCell = document.createElement('td');
-                websiteNameCell.textContent = item.module;
-                row.appendChild(websiteNameCell);
+        const websiteNameCell = document.createElement('td');
+        websiteNameCell.textContent = item.module;
+        row.appendChild(websiteNameCell);
 
-                // Profile link column
-                const profileLinkCell = document.createElement('td');
-                const profileLink = document.createElement('a');
-                profileLink.href = item.data.member_url || '#'; // Adjust based on actual data properties
-                profileLink.textContent = 'Profile Link';
-                profileLinkCell.appendChild(profileLink);
-                row.appendChild(profileLinkCell);
+        const profileLinkCell = document.createElement('td');
+        profileLinkCell.textContent = item.data.member_url || 'N/A';
+        row.appendChild(profileLinkCell);
 
-                // Data column (example: username)
-                const dataCell = document.createElement('td');
-                dataCell.textContent = "Username: " + item.data.username; // Adjust based on actual data properties
-                row.appendChild(dataCell);
+        const dataCell = document.createElement('td');
+        dataCell.textContent = "Username: " + item.data.username;
+        row.appendChild(dataCell);
 
-                // Append the row to the table body
-                tableBody.appendChild(row);
+        tableBody.appendChild(row);
+
+ // Determine the image URL from the available fields
+                let imageUrl = item.data.avatar_url || item.data.avatar || item.data.picture || 'Image not available';
 
                 // Create the widget for profile picture
                 const widgetDiv = document.createElement('div');
                 widgetDiv.className = 'side-widget to-right invert-color mix-blend-difference show';
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item align-v-bottom';
-                const link = document.createElement('a');
-                link.href = '#';
-                link.className = 'link hover-up';
-                const widgetSpan = document.createElement('span');
-                widgetSpan.className = 'widget float-icon';
-                const img = document.createElement('img');
-                img.src = item.data.avatar_url || ''; // Adjust based on actual data properties
-                widgetSpan.appendChild(img);
-                link.appendChild(widgetSpan);
-                itemDiv.appendChild(link);
-                widgetDiv.appendChild(itemDiv);
-                document.body.appendChild(widgetDiv);
-            });
-        }
 
-    </script>
+                // Website name
+                const websiteName = document.createElement('h4');
+                websiteName.textContent = item.module;
+                widgetDiv.appendChild(websiteName);
+
+                // Image
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                widgetDiv.appendChild(img);
+
+                // Username
+                const username = document.createElement('p');
+                username.textContent = "Username: " + item.data.username;
+                widgetDiv.appendChild(username);
+
+                document.body.appendChild(widgetDiv);
+    });
+}
+
+</script>
 </body>
 </html>
