@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,50 +93,111 @@
             });
     }
 
-    function renderData(jsonData) {
-    const tableBody = document.getElementById('dataTable').querySelector('tbody'); // Define tableBody here
+function convertTableToCSV(table) {
+    const rows = table.querySelectorAll('tr');
+    let csv = [];
+    rows.forEach(row => {
+        const columns = row.querySelectorAll('td, th');
+        let rowData = [];
+        columns.forEach(column => rowData.push(column.innerText));
+        csv.push(rowData.join(','));
+    });
+    return csv.join('\n');
+}
+
+function renderData(jsonData) {
+    const tableBody = document.getElementById('dataTable').querySelector('tbody');
 
     jsonData.data.forEach(item => {
         const row = document.createElement('tr');
+        let imageUrl, username, profileLink;
 
+        switch (item.module) {
+            case 'etsy':
+                imageUrl = item.data.avatar;
+                username = item.data.name;
+                profileLink = 'N/A'; // No profile link provided for Etsy in the sample data
+                break;
+            case 'emailcheckers':
+                // For simplicity, we'll just take the first item in the data array
+                username = item.data.email;
+                profileLink = 'N/A'; // No profile link provided for emailcheckers in the sample data
+                break;
+            case 'hibp':
+                // For simplicity, we'll just take the first item in the data array
+                username = item.data[0].Name;
+                imageUrl = item.data[0].LogoPath;
+                profileLink = 'N/A'; // No profile link provided for hibp in the sample data
+                break;
+            case 'google':
+                // Hypothetical structure for YouTube and Google Maps
+                if (item.data.service === 'youtube') {
+                    username = item.data.channelName;
+                    imageUrl = item.data.channelAvatar;
+                    profileLink = item.data.channelUrl;
+                } else if (item.data.service === 'googlemaps') {
+                    username = item.data.locationName;
+                    imageUrl = 'N/A'; // Assuming no image for Google Maps
+                    profileLink = item.data.locationUrl;
+                }
+                break;
+            default:
+                username = item.data.username || 'N/A';
+                imageUrl = item.data.avatar_url || item.data.avatar || item.data.picture || 'Image not available';
+                profileLink = item.data.member_url || 'N/A';
+        }
+
+        // Populate table rows
         const websiteNameCell = document.createElement('td');
         websiteNameCell.textContent = item.module;
         row.appendChild(websiteNameCell);
 
         const profileLinkCell = document.createElement('td');
-        profileLinkCell.textContent = item.data.member_url || 'N/A';
+        profileLinkCell.textContent = profileLink;
         row.appendChild(profileLinkCell);
 
         const dataCell = document.createElement('td');
-        dataCell.textContent = "Username: " + item.data.username;
+        dataCell.textContent = "Username: " + username;
         row.appendChild(dataCell);
 
         tableBody.appendChild(row);
 
- // Determine the image URL from the available fields
-                let imageUrl = item.data.avatar_url || item.data.avatar || item.data.picture || 'Image not available';
+        // Create the widget for profile picture
+        const widgetDiv = document.createElement('div');
+        widgetDiv.className = 'side-widget to-right invert-color mix-blend-difference show';
 
-                // Create the widget for profile picture
-                const widgetDiv = document.createElement('div');
-                widgetDiv.className = 'side-widget to-right invert-color mix-blend-difference show';
+        // Website name
+        const websiteName = document.createElement('h4');
+        websiteName.textContent = item.module;
+        widgetDiv.appendChild(websiteName);
 
-                // Website name
-                const websiteName = document.createElement('h4');
-                websiteName.textContent = item.module;
-                widgetDiv.appendChild(websiteName);
+        // Image
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        widgetDiv.appendChild(img);
 
-                // Image
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                widgetDiv.appendChild(img);
+        // Username
+        const usernameElement = document.createElement('p');
+        usernameElement.textContent = "Username: " + username;
+        widgetDiv.appendChild(usernameElement);
 
-                // Username
-                const username = document.createElement('p');
-                username.textContent = "Username: " + item.data.username;
-                widgetDiv.appendChild(username);
-
-                document.body.appendChild(widgetDiv);
+        document.body.appendChild(widgetDiv);
     });
+ 	const csvButton = document.createElement('button');
+    csvButton.textContent = "Download Table as CSV";
+    csvButton.onclick = function() {
+        const csvData = convertTableToCSV(document.getElementById('dataTable'));
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'table_data.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+    document.body.appendChild(csvButton);
 }
 
 </script>
